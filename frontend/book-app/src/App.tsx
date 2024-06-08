@@ -1,8 +1,7 @@
 import React from "react";
 import { RouterProvider } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import { router } from "./routes/router";
 
+import { router } from "./routes/router";
 import ThemeProvider from "./providers/ThemeProvider";
 import ApolloClientProvider from "./providers/ApolloClientProvider";
 
@@ -12,7 +11,6 @@ const App: React.FC<Props> = () => {
   return (
     <>
       {" "}
-      <ToastContainer />
       <ThemeProvider>
         <ApolloClientProvider>
           <RouterProvider router={router} />
