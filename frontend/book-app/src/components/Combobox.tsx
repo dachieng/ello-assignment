@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-no-comment-textnodes */
-"use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {

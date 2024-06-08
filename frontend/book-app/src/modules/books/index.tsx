@@ -5,14 +5,17 @@ import {
   Card,
   CardContent,
   CardMedia,
+  CircularProgress,
   Grid,
   IconButton,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { GetBooksQuery } from "../../gql/graphql";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { toast } from "react-toastify";
+
 import CustomCombobox from "../../components/Combobox";
+import type { GetBooksQuery } from "../../gql/graphql";
 
 interface Props {}
 
@@ -54,8 +57,7 @@ const Books: React.FC<Props> = () => {
     }
   }, [data]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) return toast.error(error.message);
 
   return (
     <div>
@@ -84,7 +86,12 @@ const Books: React.FC<Props> = () => {
           />
         </Box>{" "}
         <Grid container spacing={3}>
-          {filteredBooks &&
+          {loading ? (
+            <Box display="flex" justifyContent="center" my={4}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            filteredBooks &&
             filteredBooks?.map((book: any, index: number) => (
               <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
                 <CustomCard>
@@ -121,7 +128,8 @@ const Books: React.FC<Props> = () => {
                   </CardContent>
                 </CustomCard>
               </Grid>
-            ))}
+            ))
+          )}
         </Grid>
       </Box>
     </div>
