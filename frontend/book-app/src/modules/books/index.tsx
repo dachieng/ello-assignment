@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery, gql } from "@apollo/client";
 import {
   Box,
@@ -12,6 +12,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { GetBooksQuery } from "../../gql/graphql";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CustomCombobox from "../../components/Combobox";
 
 interface Props {}
 
@@ -28,22 +29,63 @@ const GET_BOOKS = gql`
 
 const Books: React.FC<Props> = () => {
   const { loading, error, data } = useQuery<GetBooksQuery>(GET_BOOKS);
-
   const [books, setBooks] = useState(data?.books || []);
+  const [search, setSearch] = useState("");
+
+  const filteredBooks =
+    books.filter((book) =>
+      book?.title?.toLowerCase().includes(search.toLowerCase())
+    ) ?? [];
 
   const handleDelete = (index: number) => {
     setBooks((prevBooks) => prevBooks.filter((_, i) => i !== index));
   };
 
+  const handleOptionChange = (
+    value: string,
+    option?: { title: string; coverPhotoURL: string; readingLevel: string }
+  ) => {
+    setSearch(value);
+  };
+
+  useEffect(() => {
+    if (data) {
+      setBooks(data.books ?? []);
+    }
+  }, [data]);
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
+
   return (
     <div>
       <Box sx={{ p: 2, m: 2 }}>
-        {" "}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
+          <CustomCombobox
+            label=""
+            placeholder="Select a book"
+            // @ts-ignore
+            options={books ? books : []}
+            renderOption={(option: any, index) => (
+              <>
+                <img src={option.coverPhotoURL} alt={option.title} width="50" />
+                <span style={{ marginLeft: 10 }}>{option.title}</span>
+              </>
+            )}
+            renderOptionString={(option) => option?.title || ""}
+            onChange={handleOptionChange}
+          />
+        </Box>{" "}
         <Grid container spacing={3}>
-          {books &&
-            books?.map((book: any, index: number) => (
+          {filteredBooks &&
+            filteredBooks?.map((book: any, index: number) => (
               <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
                 <CustomCard>
                   <CardMedia
