@@ -8,7 +8,7 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import styled from "@emotion/styled";
+import { styled } from "@mui/material/styles";
 
 interface Props {}
 
@@ -37,7 +37,7 @@ const Books: React.FC<Props> = () => {
         <Grid container spacing={3}>
           {data &&
             data.books.map((book: any, index: number) => (
-              <Grid item xs={12} sm={4} md={4} lg={4} key={index}>
+              <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
                 <CustomCard>
                   <CardMedia
                     component="img"
@@ -67,13 +67,13 @@ const CustomCard = styled(Card)(({ theme }) => ({
 }));
 
 const CardFooter = styled(CardContent)(({ theme }) => ({
-  backgroundColor: "primary-main",
-  color: "white",
-  flexGrow: 1,
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  padding: "2rem",
+  padding: theme.spacing(2),
+  marginTop: "auto",
 }));
 
 export default Books;
