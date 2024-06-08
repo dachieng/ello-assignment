@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery, gql } from "@apollo/client";
 import {
   Box,
@@ -6,9 +6,12 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  IconButton,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { GetBooksQuery } from "../../gql/graphql";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Props {}
 
@@ -24,9 +27,13 @@ const GET_BOOKS = gql`
 `;
 
 const Books: React.FC<Props> = () => {
-  const { loading, error, data } = useQuery(GET_BOOKS);
+  const { loading, error, data } = useQuery<GetBooksQuery>(GET_BOOKS);
 
-  console.log(data);
+  const [books, setBooks] = useState(data?.books || []);
+
+  const handleDelete = (index: number) => {
+    setBooks((prevBooks) => prevBooks.filter((_, i) => i !== index));
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -35,8 +42,8 @@ const Books: React.FC<Props> = () => {
       <Box sx={{ p: 2, m: 2 }}>
         {" "}
         <Grid container spacing={3}>
-          {data &&
-            data.books.map((book: any, index: number) => (
+          {books &&
+            books?.map((book: any, index: number) => (
               <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
                 <CustomCard>
                   <CardMedia
@@ -47,10 +54,29 @@ const Books: React.FC<Props> = () => {
                     title={book.title}
                   />
                   <CardFooter>
-                    <Typography variant="h6" component="div">
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ fontWeight: "bold", flex: 1 }}
+                    >
                       {book.title}
                     </Typography>
+                    <IconButton
+                      color="secondary"
+                      onClick={() => handleDelete(index)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   </CardFooter>
+                  <CardContent>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      Reading Level: {book.readingLevel}
+                    </Typography>
+                  </CardContent>
                 </CustomCard>
               </Grid>
             ))}
@@ -67,8 +93,8 @@ const CustomCard = styled(Card)(({ theme }) => ({
 }));
 
 const CardFooter = styled(CardContent)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.primary.contrastText,
+  backgroundColor: theme.palette.primary.contrastText,
+  color: theme.palette.primary.main,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
